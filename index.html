@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GameTime Central - Gaming Analytics Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-gamepad"></i>
+                    <h1>GameTime Central</h1>
+                </div>
+                <nav class="nav-menu">
+                    <button class="nav-btn active" data-section="dashboard">
+                        <i class="fas fa-chart-line"></i> Dashboard
+                    </button>
+                    <button class="nav-btn" data-section="library">
+                        <i class="fas fa-book"></i> Library
+                    </button>
+                    <button class="nav-btn" data-section="achievements">
+                        <i class="fas fa-trophy"></i> Achievements
+                    </button>
+                    <button class="nav-btn" data-section="social">
+                        <i class="fas fa-users"></i> Social
+                    </button>
+                </nav>
+                <div class="header-controls">
+                    <button id="exportBtn" class="export-btn">
+                        <i class="fas fa-download"></i> Export
+                    </button>
+                    <button id="themeToggle" class="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="section active">
+                <div class="section-header">
+                    <h2>Gaming Analytics Dashboard</h2>
+                    <div class="time-filters">
+                        <button class="filter-btn active" data-period="daily">Daily</button>
+                        <button class="filter-btn" data-period="weekly">Weekly</button>
+                        <button class="filter-btn" data-period="monthly">Monthly</button>
+                        <button class="filter-btn" data-period="yearly">Yearly</button>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <!-- Stats Cards -->
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-icon steam"><i class="fab fa-steam"></i></div>
+                            <div class="stat-info">
+                                <h3 id="steamHours">0h</h3>
+                                <p>Steam Hours</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon playstation"><i class="fab fa-playstation"></i></div>
+                            <div class="stat-info">
+                                <h3 id="playstationHours">0h</h3>
+                                <p>PlayStation Hours</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon xbox"><i class="fab fa-xbox"></i></div>
+                            <div class="stat-info">
+                                <h3 id="xboxHours">0h</h3>
+                                <p>Xbox Hours</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon nintendo"><i class="fas fa-gamepad"></i></div>
+                            <div class="stat-info">
+                                <h3 id="nintendoHours">0h</h3>
+                                <p>Nintendo Hours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts -->
+                    <div class="chart-container">
+                        <div class="chart-card">
+                            <h3>Gaming Hours Trend</h3>
+                            <canvas id="hoursChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Platform Distribution</h3>
+                            <canvas id="platformChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-card">
+                            <h3>Genre Preferences</h3>
+                            <canvas id="genreChart"></canvas>
+                        </div>
+                        <div class="chart-card">
+                            <h3>Recent Activity</h3>
+                            <div class="activity-list" id="recentActivity"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Library Section -->
+            <section id="library" class="section">
+                <div class="section-header">
+                    <h2>Game Library</h2>
+                    <div class="library-controls">
+                        <input type="text" id="gameSearch" placeholder="Search games..." class="search-input">
+                        <select id="platformFilter" class="platform-filter">
+                            <option value="all">All Platforms</option>
+                            <option value="steam">Steam</option>
+                            <option value="playstation">PlayStation</option>
+                            <option value="xbox">Xbox</option>
+                            <option value="nintendo">Nintendo</option>
+                            <option value="epic">Epic Games</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="games-grid" id="gamesGrid"></div>
+            </section>
+
+            <!-- Achievements Section -->
+            <section id="achievements" class="section">
+                <div class="section-header">
+                    <h2>Achievements & Trophies</h2>
+                </div>
+                <div class="achievements-container">
+                    <div class="achievement-stats">
+                        <div class="achievement-card">
+                            <h3>Total Achievements</h3>
+                            <div class="achievement-number" id="totalAchievements">0</div>
+                        </div>
+                        <div class="achievement-card">
+                            <h3>Completion Rate</h3>
+                            <div class="achievement-number" id="completionRate">0%</div>
+                        </div>
+                        <div class="achievement-card">
+                            <h3>Rare Achievements</h3>
+                            <div class="achievement-number" id="rareAchievements">0</div>
+                        </div>
+                    </div>
+                    <div class="achievements-list" id="achievementsList"></div>
+                </div>
+            </section>
+
+            <!-- Social Section -->
+            <section id="social" class="section">
+                <div class="section-header">
+                    <h2>Social Comparison</h2>
+                </div>
+                <div class="social-container">
+                    <div class="friends-list">
+                        <h3>Friends Leaderboard</h3>
+                        <div id="friendsLeaderboard"></div>
+                    </div>
+                    <div class="comparison-chart">
+                        <h3>Hours Comparison</h3>
+                        <canvas id="socialChart"></canvas>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
