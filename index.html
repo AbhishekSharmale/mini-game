@@ -57,22 +57,45 @@
                 </div>
 
                 <div class="dashboard-grid">
-                    <!-- Primary Metric -->
-                    <div class="primary-metric">
-                        <div class="total-hours-card">
-                            <div class="metric-icon">
-                                <svg class="progress-ring" viewBox="0 0 60 60">
-                                    <circle class="progress-ring-circle" cx="30" cy="30" r="30" id="totalProgressRing"></circle>
-                                </svg>
-                                <i class="fas fa-clock"></i>
+                    <!-- Hero Gaming Metric -->
+                    <div class="hero-metric">
+                        <div class="hero-card" id="heroCard">
+                            <div class="hero-background">
+                                <div class="particle" style="--delay: 0s; --duration: 8s;"></div>
+                                <div class="particle" style="--delay: 2s; --duration: 6s;"></div>
+                                <div class="particle" style="--delay: 4s; --duration: 10s;"></div>
+                                <div class="particle" style="--delay: 1s; --duration: 7s;"></div>
+                                <div class="particle" style="--delay: 3s; --duration: 9s;"></div>
                             </div>
-                            <div class="metric-info">
-                                <h2 id="totalHours" data-target="0">0h</h2>
-                                <p>Total Gaming Hours</p>
-                                <div class="streak-counter">
-                                    <i class="fas fa-fire"></i>
-                                    <span id="streak">7</span> day streak
+                            <div class="hero-content">
+                                <div class="metric-icon-hero">
+                                    <svg class="progress-ring-hero" viewBox="0 0 80 80">
+                                        <circle class="progress-ring-bg" cx="40" cy="40" r="35"></circle>
+                                        <circle class="progress-ring-circle" cx="40" cy="40" r="35" id="totalProgressRing"></circle>
+                                    </svg>
+                                    <div class="icon-center">
+                                        <i class="fas fa-gamepad"></i>
+                                    </div>
                                 </div>
+                                <div class="metric-info-hero">
+                                    <div class="metric-label">TOTAL GAMING TIME</div>
+                                    <h1 id="totalHours" data-target="0">0h</h1>
+                                    <div class="metric-subtitle">Across all platforms</div>
+                                    <div class="streak-display">
+                                        <div class="streak-flame">
+                                            <i class="fas fa-fire"></i>
+                                            <i class="fas fa-fire"></i>
+                                            <i class="fas fa-fire"></i>
+                                        </div>
+                                        <div class="streak-text">
+                                            <span id="streak">7</span> DAY STREAK
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="achievement-preview" id="achievementPreview">
+                                <div class="achievement-icon"><i class="fas fa-trophy"></i></div>
+                                <div class="achievement-text">Next milestone: 500h</div>
                             </div>
                         </div>
                     </div>
@@ -200,11 +223,31 @@
             <i class="fas fa-sync-alt"></i>
         </button>
         
-        <!-- Loading Overlay -->
+        <!-- Gaming Loading Overlay -->
         <div class="loading-overlay" id="loadingOverlay" style="display: none;">
-            <div class="loading-spinner">
-                <div class="spinner-ring"></div>
-                <p>Syncing gaming data...</p>
+            <div class="loading-container">
+                <div class="loading-logo">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="loading-rings">
+                    <div class="ring ring-1"></div>
+                    <div class="ring ring-2"></div>
+                    <div class="ring ring-3"></div>
+                </div>
+                <div class="loading-text">
+                    <div class="loading-title">SYNCING GAMING DATA</div>
+                    <div class="loading-subtitle">Connecting to gaming networks...</div>
+                    <div class="loading-progress">
+                        <div class="progress-bar" id="loadingProgress"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="loading-particles">
+                <div class="loading-particle" style="--delay: 0s;"></div>
+                <div class="loading-particle" style="--delay: 0.5s;"></div>
+                <div class="loading-particle" style="--delay: 1s;"></div>
+                <div class="loading-particle" style="--delay: 1.5s;"></div>
+                <div class="loading-particle" style="--delay: 2s;"></div>
             </div>
         </div>
     </div>

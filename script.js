@@ -129,18 +129,19 @@ class GameTimeCentral {
         const platformHours = this.calculatePlatformHours();
         const totalHours = Object.values(platformHours).reduce((sum, hours) => sum + hours, 0);
         
-        // Animate total hours
-        this.animateCounter('totalHours', totalHours, 'h');
+        // Hero metric animation
+        this.animateHeroCounter('totalHours', totalHours, 'h');
         this.updateProgressRing(totalHours);
+        this.checkAchievements(totalHours);
         
         // Animate platform hours with staggered timing
-        setTimeout(() => this.animateCounter('steamHours', platformHours.steam, 'h'), 200);
-        setTimeout(() => this.animateCounter('playstationHours', platformHours.playstation, 'h'), 400);
-        setTimeout(() => this.animateCounter('xboxHours', platformHours.xbox, 'h'), 600);
-        setTimeout(() => this.animateCounter('nintendoHours', platformHours.nintendo, 'h'), 800);
+        setTimeout(() => this.animateCounter('steamHours', platformHours.steam, 'h'), 300);
+        setTimeout(() => this.animateCounter('playstationHours', platformHours.playstation, 'h'), 500);
+        setTimeout(() => this.animateCounter('xboxHours', platformHours.xbox, 'h'), 700);
+        setTimeout(() => this.animateCounter('nintendoHours', platformHours.nintendo, 'h'), 900);
         
-        // Add mouse tracking for cards
         this.addMouseTracking();
+        this.addCardRevealAnimations();
     }
 
     calculatePlatformHours() {
@@ -501,6 +502,75 @@ class GameTimeCentral {
         themeIcon.classList.toggle('fa-sun');
     }
     
+    animateHeroCounter(elementId, target, suffix = '') {
+        const element = document.getElementById(elementId);
+        const duration = 2500;
+        const start = 0;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 4);
+            const current = Math.floor(start + (target - start) * easeOut);
+            
+            element.textContent = `${current}${suffix}`;
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                this.celebrateHeroMetric(element, target);
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+    
+    celebrateHeroMetric(element, value) {
+        if (value > 0 && value % 100 === 0) {
+            element.style.animation = 'heroTextGlow 0.5s ease-out';
+            this.showAchievement(`${value} Hours Milestone!`, `You've reached ${value} total gaming hours`);
+        }
+    }
+    
+    addCardRevealAnimations() {
+        const cards = document.querySelectorAll('.stat-card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('card-reveal');
+        });
+    }
+    
+    checkAchievements(totalHours) {
+        const milestones = [50, 100, 250, 500, 1000];
+        const currentMilestone = milestones.find(m => totalHours >= m && totalHours < m + 10);
+        
+        if (currentMilestone) {
+            setTimeout(() => {
+                this.showAchievement(
+                    `${currentMilestone}h Gaming Master!`,
+                    `You've achieved ${currentMilestone} hours of gaming`
+                );
+            }, 1000);
+        }
+    }
+    
+    showAchievement(title, description) {
+        // Achievement notification would be implemented here
+        console.log(`Achievement: ${title} - ${description}`);
+    }
+    
+    triggerRandomAchievement() {
+        const achievements = [
+            { title: 'Data Synced!', desc: 'Successfully updated gaming stats' },
+            { title: 'Platform Explorer', desc: 'Gaming across multiple platforms' },
+            { title: 'Consistency King', desc: 'Regular gaming sessions detected' }
+        ];
+        
+        const random = achievements[Math.floor(Math.random() * achievements.length)];
+        this.showAchievement(random.title, random.desc);
+    }
+    
     animateCounter(elementId, target, suffix = '') {
         const element = document.getElementById(elementId);
         const duration = 1500;
@@ -534,12 +604,21 @@ class GameTimeCentral {
     
     updateProgressRing(hours) {
         const ring = document.getElementById('totalProgressRing');
-        const maxHours = 500; // Target hours for full circle
+        const maxHours = 1000;
         const progress = Math.min(hours / maxHours, 1);
-        const circumference = 2 * Math.PI * 30;
+        const circumference = 2 * Math.PI * 35;
         const offset = circumference - (progress * circumference);
         
         ring.style.strokeDashoffset = offset;
+        
+        // Change ring color based on progress
+        if (progress < 0.3) {
+            ring.style.stroke = 'var(--rgb-red)';
+        } else if (progress < 0.7) {
+            ring.style.stroke = 'var(--rgb-yellow)';
+        } else {
+            ring.style.stroke = 'var(--rgb-green)';
+        }
     }
     
     addMouseTracking() {
@@ -555,7 +634,23 @@ class GameTimeCentral {
     }
     
     showLoadingState() {
-        document.getElementById('loadingOverlay').style.display = 'flex';
+        const overlay = document.getElementById('loadingOverlay');
+        const progressBar = document.getElementById('loadingProgress');
+        
+        overlay.style.display = 'flex';
+        
+        // Animate progress bar
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            
+            progressBar.style.width = `${progress}%`;
+            
+            if (progress >= 100) {
+                clearInterval(interval);
+            }
+        }, 200);
     }
     
     hideLoadingState() {
@@ -575,18 +670,33 @@ class GameTimeCentral {
             icon.style.animation = '';
             this.hideLoadingState();
             
-            // Show success feedback
-            syncBtn.style.background = 'var(--accent-lime)';
+            // Success animation
+            syncBtn.style.background = 'linear-gradient(45deg, var(--rgb-green), var(--rgb-cyan))';
+            syncBtn.style.transform = 'scale(1.1)';
+            
             setTimeout(() => {
                 syncBtn.style.background = '';
-            }, 1000);
-        }, 2000);
+                syncBtn.style.transform = '';
+            }, 1500);
+            
+            // Show achievement if milestone reached
+            this.triggerRandomAchievement();
+        }, 3000);
     }
 }
 
-// Initialize the application
+// Initialize the application with enhanced loading
 document.addEventListener('DOMContentLoaded', () => {
-    window.gameTimeApp = new GameTimeCentral();
+    // Show initial loading
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+    }
+    
+    // Initialize app after brief delay for loading animation
+    setTimeout(() => {
+        window.gameTimeApp = new GameTimeCentral();
+    }, 500);
 });
 
 // Add spin animation for sync button
@@ -611,3 +721,12 @@ setInterval(() => {
 
 // Store app instance globally
 window.gameTimeApp = null;
+
+// Add CSS for card reveal animation
+const cardRevealStyle = document.createElement('style');
+cardRevealStyle.textContent = `
+    .card-reveal {
+        animation: cardReveal 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+    }
+`;
+document.head.appendChild(cardRevealStyle);
