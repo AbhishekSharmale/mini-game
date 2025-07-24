@@ -1167,45 +1167,7 @@ body::after {
 
 
 
-.achievement-preview {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(10px);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 0.8rem 1.2rem;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-    opacity: 0.8;
-    transition: all 0.3s ease;
-}
 
-.achievement-preview:hover {
-    opacity: 1;
-    transform: scale(1.05);
-    border-color: var(--rgb-yellow);
-    box-shadow: 0 0 20px rgba(255, 255, 0, 0.3);
-}
-
-.achievement-preview .achievement-icon {
-    color: var(--rgb-yellow);
-    font-size: 1.2rem;
-    animation: trophyGlow 2s ease-in-out infinite;
-}
-
-@keyframes trophyGlow {
-    0%, 100% { filter: drop-shadow(0 0 5px var(--rgb-yellow)); }
-    50% { filter: drop-shadow(0 0 15px var(--rgb-yellow)); }
-}
-
-.achievement-text {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-}
 
 .total-hours-card::before {
     content: '';
