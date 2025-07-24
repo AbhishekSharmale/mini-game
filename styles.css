@@ -66,6 +66,7 @@ body {
 .logo i {
     font-size: 2rem;
     color: var(--accent-color);
+    animation: rotate 3s linear infinite;
 }
 
 .logo h1 {
@@ -582,6 +583,11 @@ body {
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
 }
 
 
