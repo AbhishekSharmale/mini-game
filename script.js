@@ -114,6 +114,17 @@ class GameTimeCentral {
         
         // Floating action button
         document.getElementById('syncBtn').addEventListener('click', () => this.syncData());
+        
+        // Connect accounts modal
+        document.getElementById('connectAccountsBtn').addEventListener('click', () => this.openConnectModal());
+        document.getElementById('modalClose').addEventListener('click', () => this.closeConnectModal());
+        document.getElementById('demoBtn').addEventListener('click', () => this.enableDemoMode());
+        
+        // Account connection buttons
+        ['steam', 'playstation', 'xbox', 'nintendo', 'epic'].forEach(platform => {
+            document.getElementById(`connect${platform.charAt(0).toUpperCase() + platform.slice(1)}`)
+                .addEventListener('click', () => this.connectAccount(platform));
+        });
 
         // Search and filters
         document.getElementById('gameSearch').addEventListener('input', (e) => this.filterGames(e.target.value));
@@ -617,6 +628,67 @@ class GameTimeCentral {
                 card.style.outline = 'none';
             });
         });
+    }
+    
+    openConnectModal() {
+        document.getElementById('connectModal').style.display = 'flex';
+        this.updateConnectionStatus();
+    }
+    
+    closeConnectModal() {
+        document.getElementById('connectModal').style.display = 'none';
+    }
+    
+    connectAccount(platform) {
+        const btn = document.getElementById(`connect${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+        const status = document.getElementById(`${platform}Status`);
+        
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+        btn.disabled = true;
+        
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-check"></i> Connected';
+            btn.classList.add('connected');
+            status.textContent = 'Connected';
+            status.classList.add('connected');
+            
+            // Save connection status
+            localStorage.setItem(`${platform}Connected`, 'true');
+            
+            // Show success message
+            this.showAchievement(`${platform.charAt(0).toUpperCase() + platform.slice(1)} Connected!`, 'Account linked successfully');
+        }, 2000);
+    }
+    
+    updateConnectionStatus() {
+        ['steam', 'playstation', 'xbox', 'nintendo', 'epic'].forEach(platform => {
+            const connected = localStorage.getItem(`${platform}Connected`) === 'true';
+            const btn = document.getElementById(`connect${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+            const status = document.getElementById(`${platform}Status`);
+            
+            if (connected) {
+                btn.innerHTML = '<i class="fas fa-check"></i> Connected';
+                btn.classList.add('connected');
+                status.textContent = 'Connected';
+                status.classList.add('connected');
+            }
+        });
+    }
+    
+    enableDemoMode() {
+        // Mark all platforms as connected for demo
+        ['steam', 'playstation', 'xbox', 'nintendo', 'epic'].forEach(platform => {
+            localStorage.setItem(`${platform}Connected`, 'true');
+        });
+        
+        this.closeConnectModal();
+        this.showAchievement('Demo Mode Enabled!', 'Exploring with sample gaming data');
+        
+        // Refresh the dashboard
+        setTimeout(() => {
+            this.updateStats();
+            this.updateCharts();
+        }, 1000);
     }
     
     triggerRandomAchievement() {

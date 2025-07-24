@@ -6,6 +6,7 @@
     <title>GameTime Central - Gaming Analytics Dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="empty-state.css">
+    <link rel="stylesheet" href="modal.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -39,6 +40,9 @@
                     </button>
                 </nav>
                 <div class="header-controls">
+                    <button id="connectAccountsBtn" class="connect-accounts-btn">
+                        <i class="fas fa-link"></i> Connect Accounts
+                    </button>
                     <button id="exportBtn" class="export-btn">
                         <i class="fas fa-download"></i> Export
                     </button>
@@ -240,6 +244,99 @@
                 <div class="loading-particle" style="--delay: 1s;"></div>
                 <div class="loading-particle" style="--delay: 1.5s;"></div>
                 <div class="loading-particle" style="--delay: 2s;"></div>
+            </div>
+        </div>
+        
+        <!-- Connect Accounts Modal -->
+        <div class="modal-overlay" id="connectModal" style="display: none;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Connect Gaming Accounts</h2>
+                    <button class="modal-close" id="modalClose">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Link your gaming accounts to sync your gaming data and get comprehensive analytics across all platforms.</p>
+                    
+                    <div class="account-connections">
+                        <div class="account-card" data-platform="steam">
+                            <div class="account-icon steam">
+                                <i class="fab fa-steam"></i>
+                            </div>
+                            <div class="account-info">
+                                <h3>Steam</h3>
+                                <p class="account-status" id="steamStatus">Not connected</p>
+                            </div>
+                            <button class="connect-btn" id="connectSteam">
+                                <i class="fas fa-link"></i> Connect
+                            </button>
+                        </div>
+                        
+                        <div class="account-card" data-platform="playstation">
+                            <div class="account-icon playstation">
+                                <i class="fab fa-playstation"></i>
+                            </div>
+                            <div class="account-info">
+                                <h3>PlayStation</h3>
+                                <p class="account-status" id="playstationStatus">Not connected</p>
+                            </div>
+                            <button class="connect-btn" id="connectPlaystation">
+                                <i class="fas fa-link"></i> Connect
+                            </button>
+                        </div>
+                        
+                        <div class="account-card" data-platform="xbox">
+                            <div class="account-icon xbox">
+                                <i class="fab fa-xbox"></i>
+                            </div>
+                            <div class="account-info">
+                                <h3>Xbox Live</h3>
+                                <p class="account-status" id="xboxStatus">Not connected</p>
+                            </div>
+                            <button class="connect-btn" id="connectXbox">
+                                <i class="fas fa-link"></i> Connect
+                            </button>
+                        </div>
+                        
+                        <div class="account-card" data-platform="nintendo">
+                            <div class="account-icon nintendo">
+                                <i class="fas fa-gamepad"></i>
+                            </div>
+                            <div class="account-info">
+                                <h3>Nintendo</h3>
+                                <p class="account-status" id="nintendoStatus">Not connected</p>
+                            </div>
+                            <button class="connect-btn" id="connectNintendo">
+                                <i class="fas fa-link"></i> Connect
+                            </button>
+                        </div>
+                        
+                        <div class="account-card" data-platform="epic">
+                            <div class="account-icon epic">
+                                <i class="fas fa-rocket"></i>
+                            </div>
+                            <div class="account-info">
+                                <h3>Epic Games</h3>
+                                <p class="account-status" id="epicStatus">Not connected</p>
+                            </div>
+                            <button class="connect-btn" id="connectEpic">
+                                <i class="fas fa-link"></i> Connect
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="demo-section">
+                        <div class="demo-divider">
+                            <span>OR</span>
+                        </div>
+                        <button class="demo-btn" id="demoBtn">
+                            <i class="fas fa-play"></i>
+                            Try Demo Mode
+                        </button>
+                        <p class="demo-text">Experience the dashboard with sample gaming data</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
