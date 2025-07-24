@@ -10,6 +10,7 @@ class GameTimeCentral {
 
     init() {
         this.setupEventListeners();
+        this.setupKeyboardNavigation();
         this.showLoadingState();
         setTimeout(() => {
             this.loadData();
@@ -18,7 +19,7 @@ class GameTimeCentral {
             this.renderAchievements();
             this.renderSocial();
             this.hideLoadingState();
-        }, 1500);
+        }, 1000);
     }
 
     generateMockData() {
@@ -65,9 +66,39 @@ class GameTimeCentral {
     }
 
     setupEventListeners() {
+        // Mobile menu toggle
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const navMenu = document.getElementById('navMenu');
+        
+        if (mobileToggle && navMenu) {
+            mobileToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+                const icon = mobileToggle.querySelector('i');
+                icon.classList.toggle('fa-bars');
+                icon.classList.toggle('fa-times');
+            });
+        }
+        
         // Navigation
         document.querySelectorAll('.nav-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => this.switchSection(e.target.dataset.section));
+            btn.addEventListener('click', (e) => {
+                this.switchSection(e.target.dataset.section);
+                // Close mobile menu after selection
+                if (navMenu) navMenu.classList.remove('active');
+                if (mobileToggle) {
+                    const icon = mobileToggle.querySelector('i');
+                    icon.classList.add('fa-bars');
+                    icon.classList.remove('fa-times');
+                }
+            });
+            
+            // Keyboard navigation
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
         });
 
         // Time filters
@@ -175,30 +206,32 @@ class GameTimeCentral {
                     data: data.values,
                     borderColor: '#00ffff',
                     backgroundColor: 'rgba(0, 255, 255, 0.1)',
-                    borderWidth: 3,
+                    borderWidth: 2,
                     fill: true,
                     tension: 0.4,
                     pointBackgroundColor: '#00ffff',
                     pointBorderColor: '#00ffff',
-                    pointHoverRadius: 8,
+                    pointHoverRadius: 6,
                     pointHoverBackgroundColor: '#00ffff',
                     pointHoverBorderColor: '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 animation: {
-                    duration: 2000,
+                    duration: 1000,
                     easing: 'easeInOutCubic'
                 },
                 plugins: {
                     legend: { labels: { color: '#f0f6fc' } },
                     tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        backgroundColor: 'rgba(0, 0, 0, 0.9)',
                         titleColor: '#00ffff',
                         bodyColor: '#f0f6fc',
                         borderColor: '#00ffff',
-                        borderWidth: 1
+                        borderWidth: 1,
+                        cornerRadius: 8
                     }
                 },
                 scales: {
@@ -534,11 +567,16 @@ class GameTimeCentral {
     }
     
     addCardRevealAnimations() {
-        const cards = document.querySelectorAll('.stat-card');
-        cards.forEach((card, index) => {
-            card.style.animationDelay = `${index * 0.1}s`;
-            card.classList.add('card-reveal');
-        });
+        // Check for reduced motion preference
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (!prefersReducedMotion) {
+            const cards = document.querySelectorAll('.stat-card');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+                card.classList.add('card-reveal');
+            });
+        }
     }
     
     checkAchievements(totalHours) {
@@ -558,6 +596,27 @@ class GameTimeCentral {
     showAchievement(title, description) {
         // Achievement notification would be implemented here
         console.log(`Achievement: ${title} - ${description}`);
+    }
+    
+    setupKeyboardNavigation() {
+        // Focus management for cards
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    card.click();
+                }
+            });
+            
+            card.addEventListener('focus', () => {
+                card.style.outline = '2px solid var(--rgb-cyan)';
+                card.style.outlineOffset = '2px';
+            });
+            
+            card.addEventListener('blur', () => {
+                card.style.outline = 'none';
+            });
+        });
     }
     
     triggerRandomAchievement() {
@@ -623,12 +682,22 @@ class GameTimeCentral {
     
     addMouseTracking() {
         document.querySelectorAll('.stat-card').forEach(card => {
+            // Mouse tracking
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = ((e.clientX - rect.left) / rect.width) * 100;
                 const y = ((e.clientY - rect.top) / rect.height) * 100;
                 card.style.setProperty('--mouse-x', `${x}%`);
                 card.style.setProperty('--mouse-y', `${y}%`);
+            });
+            
+            // Touch support
+            card.addEventListener('touchstart', () => {
+                card.style.transform = 'scale(0.98)';
+            });
+            
+            card.addEventListener('touchend', () => {
+                card.style.transform = '';
             });
         });
     }

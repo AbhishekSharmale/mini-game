@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GameTime Central - Gaming Analytics Dashboard</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="empty-state.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
@@ -17,17 +18,20 @@
                     <i class="fas fa-gamepad"></i>
                     <h1>GameTime Central</h1>
                 </div>
-                <nav class="nav-menu">
-                    <button class="nav-btn active" data-section="dashboard">
+                <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <nav class="nav-menu" id="navMenu" role="navigation">
+                    <button class="nav-btn active" data-section="dashboard" tabindex="0" aria-label="Dashboard section">
                         <i class="fas fa-chart-line"></i> Dashboard
                     </button>
-                    <button class="nav-btn" data-section="library">
+                    <button class="nav-btn" data-section="library" tabindex="0" aria-label="Game library section">
                         <i class="fas fa-book"></i> Library
                     </button>
-                    <button class="nav-btn" data-section="achievements">
+                    <button class="nav-btn" data-section="achievements" tabindex="0" aria-label="Achievements section">
                         <i class="fas fa-trophy"></i> Achievements
                     </button>
-                    <button class="nav-btn" data-section="social">
+                    <button class="nav-btn" data-section="social" tabindex="0" aria-label="Social features section">
                         <i class="fas fa-users"></i> Social
                     </button>
                 </nav>
@@ -63,9 +67,6 @@
                             <div class="hero-background">
                                 <div class="particle" style="--delay: 0s; --duration: 8s;"></div>
                                 <div class="particle" style="--delay: 2s; --duration: 6s;"></div>
-                                <div class="particle" style="--delay: 4s; --duration: 10s;"></div>
-                                <div class="particle" style="--delay: 1s; --duration: 7s;"></div>
-                                <div class="particle" style="--delay: 3s; --duration: 9s;"></div>
                             </div>
                             <div class="hero-content">
                                 <div class="metric-icon-hero">
@@ -79,7 +80,7 @@
                                 </div>
                                 <div class="metric-info-hero">
                                     <div class="metric-label">TOTAL GAMING TIME</div>
-                                    <h1 id="totalHours" data-target="0">0h</h1>
+                                    <h1 id="totalHours" data-target="0" aria-live="polite" aria-label="Total gaming hours across all platforms">0h</h1>
                                     <div class="metric-subtitle">Across all platforms</div>
                                     <div class="streak-display">
                                         <div class="streak-flame">
@@ -102,31 +103,31 @@
                     
                     <!-- Stats Cards -->
                     <div class="stats-row">
-                        <div class="stat-card" data-platform="steam">
+                        <div class="stat-card" data-platform="steam" role="button" tabindex="0" aria-label="Steam gaming hours">
                             <div class="stat-icon steam"><i class="fab fa-steam"></i></div>
                             <div class="stat-info">
-                                <h3 id="steamHours" data-target="0">0h</h3>
+                                <h3 id="steamHours" data-target="0" aria-live="polite">0h</h3>
                                 <p>Steam Hours</p>
                             </div>
                         </div>
-                        <div class="stat-card" data-platform="playstation">
+                        <div class="stat-card" data-platform="playstation" role="button" tabindex="0" aria-label="PlayStation gaming hours">
                             <div class="stat-icon playstation"><i class="fab fa-playstation"></i></div>
                             <div class="stat-info">
-                                <h3 id="playstationHours" data-target="0">0h</h3>
+                                <h3 id="playstationHours" data-target="0" aria-live="polite">0h</h3>
                                 <p>PlayStation Hours</p>
                             </div>
                         </div>
-                        <div class="stat-card" data-platform="xbox">
+                        <div class="stat-card" data-platform="xbox" role="button" tabindex="0" aria-label="Xbox gaming hours">
                             <div class="stat-icon xbox"><i class="fab fa-xbox"></i></div>
                             <div class="stat-info">
-                                <h3 id="xboxHours" data-target="0">0h</h3>
+                                <h3 id="xboxHours" data-target="0" aria-live="polite">0h</h3>
                                 <p>Xbox Hours</p>
                             </div>
                         </div>
-                        <div class="stat-card" data-platform="nintendo">
+                        <div class="stat-card" data-platform="nintendo" role="button" tabindex="0" aria-label="Nintendo gaming hours">
                             <div class="stat-icon nintendo"><i class="fas fa-gamepad"></i></div>
                             <div class="stat-info">
-                                <h3 id="nintendoHours" data-target="0">0h</h3>
+                                <h3 id="nintendoHours" data-target="0" aria-live="polite">0h</h3>
                                 <p>Nintendo Hours</p>
                             </div>
                         </div>
