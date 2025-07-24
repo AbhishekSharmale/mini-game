@@ -10,11 +10,15 @@ class GameTimeCentral {
 
     init() {
         this.setupEventListeners();
-        this.loadData();
-        this.renderDashboard();
-        this.renderLibrary();
-        this.renderAchievements();
-        this.renderSocial();
+        this.showLoadingState();
+        setTimeout(() => {
+            this.loadData();
+            this.renderDashboard();
+            this.renderLibrary();
+            this.renderAchievements();
+            this.renderSocial();
+            this.hideLoadingState();
+        }, 1500);
     }
 
     generateMockData() {
@@ -76,6 +80,9 @@ class GameTimeCentral {
 
         // Theme toggle
         document.getElementById('themeToggle').addEventListener('click', () => this.toggleTheme());
+        
+        // Floating action button
+        document.getElementById('syncBtn').addEventListener('click', () => this.syncData());
 
         // Search and filters
         document.getElementById('gameSearch').addEventListener('input', (e) => this.filterGames(e.target.value));
@@ -120,11 +127,20 @@ class GameTimeCentral {
 
     updateStats() {
         const platformHours = this.calculatePlatformHours();
+        const totalHours = Object.values(platformHours).reduce((sum, hours) => sum + hours, 0);
         
-        document.getElementById('steamHours').textContent = `${platformHours.steam}h`;
-        document.getElementById('playstationHours').textContent = `${platformHours.playstation}h`;
-        document.getElementById('xboxHours').textContent = `${platformHours.xbox}h`;
-        document.getElementById('nintendoHours').textContent = `${platformHours.nintendo}h`;
+        // Animate total hours
+        this.animateCounter('totalHours', totalHours, 'h');
+        this.updateProgressRing(totalHours);
+        
+        // Animate platform hours with staggered timing
+        setTimeout(() => this.animateCounter('steamHours', platformHours.steam, 'h'), 200);
+        setTimeout(() => this.animateCounter('playstationHours', platformHours.playstation, 'h'), 400);
+        setTimeout(() => this.animateCounter('xboxHours', platformHours.xbox, 'h'), 600);
+        setTimeout(() => this.animateCounter('nintendoHours', platformHours.nintendo, 'h'), 800);
+        
+        // Add mouse tracking for cards
+        this.addMouseTracking();
     }
 
     calculatePlatformHours() {
@@ -156,21 +172,41 @@ class GameTimeCentral {
                 datasets: [{
                     label: 'Gaming Hours',
                     data: data.values,
-                    borderColor: '#58a6ff',
-                    backgroundColor: 'rgba(88, 166, 255, 0.1)',
-                    borderWidth: 2,
+                    borderColor: '#00ffff',
+                    backgroundColor: 'rgba(0, 255, 255, 0.1)',
+                    borderWidth: 3,
                     fill: true,
-                    tension: 0.4
+                    tension: 0.4,
+                    pointBackgroundColor: '#00ffff',
+                    pointBorderColor: '#00ffff',
+                    pointHoverRadius: 8,
+                    pointHoverBackgroundColor: '#00ffff',
+                    pointHoverBorderColor: '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutCubic'
+                },
                 plugins: {
-                    legend: { labels: { color: '#f0f6fc' } }
+                    legend: { labels: { color: '#f0f6fc' } },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#00ffff',
+                        bodyColor: '#f0f6fc',
+                        borderColor: '#00ffff',
+                        borderWidth: 1
+                    }
                 },
                 scales: {
                     x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
                     y: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
                 }
             }
         });
@@ -188,15 +224,29 @@ class GameTimeCentral {
                 labels: ['Steam', 'PlayStation', 'Xbox', 'Nintendo', 'Epic'],
                 datasets: [{
                     data: Object.values(platformHours),
-                    backgroundColor: ['#58a6ff', '#79c0ff', '#7c3aed', '#f97316', '#6b7280'],
+                    backgroundColor: ['#00ffff', '#8b5cf6', '#32d74b', '#ff6b35', '#6b7280'],
                     borderColor: '#21262d',
-                    borderWidth: 2
+                    borderWidth: 3,
+                    hoverBorderWidth: 5,
+                    hoverBorderColor: '#ffffff'
                 }]
             },
             options: {
                 responsive: true,
+                animation: {
+                    animateRotate: true,
+                    duration: 2000,
+                    easing: 'easeInOutCubic'
+                },
                 plugins: {
-                    legend: { labels: { color: '#f0f6fc' } }
+                    legend: { labels: { color: '#f0f6fc' } },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#00ffff',
+                        bodyColor: '#f0f6fc',
+                        borderColor: '#00ffff',
+                        borderWidth: 1
+                    }
                 }
             }
         });
@@ -215,15 +265,29 @@ class GameTimeCentral {
                 datasets: [{
                     label: 'Hours by Genre',
                     data: Object.values(genreData),
-                    backgroundColor: '#58a6ff',
-                    borderColor: '#58a6ff',
-                    borderWidth: 1
+                    backgroundColor: '#8b5cf6',
+                    borderColor: '#8b5cf6',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutCubic',
+                    delay: (context) => context.dataIndex * 200
+                },
                 plugins: {
-                    legend: { labels: { color: '#f0f6fc' } }
+                    legend: { labels: { color: '#f0f6fc' } },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#8b5cf6',
+                        bodyColor: '#f0f6fc',
+                        borderColor: '#8b5cf6',
+                        borderWidth: 1
+                    }
                 },
                 scales: {
                     x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
@@ -374,15 +438,29 @@ class GameTimeCentral {
                 datasets: [{
                     label: 'Gaming Hours',
                     data: this.mockData.friends.map(f => f.hours),
-                    backgroundColor: '#58a6ff',
-                    borderColor: '#58a6ff',
-                    borderWidth: 1
+                    backgroundColor: '#32d74b',
+                    borderColor: '#32d74b',
+                    borderWidth: 2,
+                    borderRadius: 8,
+                    borderSkipped: false
                 }]
             },
             options: {
                 responsive: true,
+                animation: {
+                    duration: 2000,
+                    easing: 'easeInOutCubic',
+                    delay: (context) => context.dataIndex * 150
+                },
                 plugins: {
-                    legend: { labels: { color: '#f0f6fc' } }
+                    legend: { labels: { color: '#f0f6fc' } },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                        titleColor: '#32d74b',
+                        bodyColor: '#f0f6fc',
+                        borderColor: '#32d74b',
+                        borderWidth: 1
+                    }
                 },
                 scales: {
                     x: { ticks: { color: '#8b949e' }, grid: { color: '#30363d' } },
@@ -418,26 +496,118 @@ class GameTimeCentral {
     }
 
     toggleTheme() {
-        // Theme toggle functionality (already in dark mode)
         const themeIcon = document.querySelector('#themeToggle i');
         themeIcon.classList.toggle('fa-moon');
         themeIcon.classList.toggle('fa-sun');
+    }
+    
+    animateCounter(elementId, target, suffix = '') {
+        const element = document.getElementById(elementId);
+        const duration = 1500;
+        const start = 0;
+        const startTime = performance.now();
+        
+        const animate = (currentTime) => {
+            const elapsed = currentTime - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            const easeOut = 1 - Math.pow(1 - progress, 3);
+            const current = Math.floor(start + (target - start) * easeOut);
+            
+            element.textContent = `${current}${suffix}`;
+            element.style.animation = 'countUp 0.3s ease-out';
+            
+            if (progress < 1) {
+                requestAnimationFrame(animate);
+            } else {
+                // Celebration effect for milestones
+                if (target > 0 && target % 100 === 0) {
+                    element.parentElement.classList.add('milestone-celebration');
+                    setTimeout(() => {
+                        element.parentElement.classList.remove('milestone-celebration');
+                    }, 1000);
+                }
+            }
+        };
+        
+        requestAnimationFrame(animate);
+    }
+    
+    updateProgressRing(hours) {
+        const ring = document.getElementById('totalProgressRing');
+        const maxHours = 500; // Target hours for full circle
+        const progress = Math.min(hours / maxHours, 1);
+        const circumference = 2 * Math.PI * 30;
+        const offset = circumference - (progress * circumference);
+        
+        ring.style.strokeDashoffset = offset;
+    }
+    
+    addMouseTracking() {
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                card.style.setProperty('--mouse-x', `${x}%`);
+                card.style.setProperty('--mouse-y', `${y}%`);
+            });
+        });
+    }
+    
+    showLoadingState() {
+        document.getElementById('loadingOverlay').style.display = 'flex';
+    }
+    
+    hideLoadingState() {
+        document.getElementById('loadingOverlay').style.display = 'none';
+    }
+    
+    syncData() {
+        const syncBtn = document.getElementById('syncBtn');
+        const icon = syncBtn.querySelector('i');
+        
+        icon.style.animation = 'spin 1s linear infinite';
+        this.showLoadingState();
+        
+        setTimeout(() => {
+            this.updateStats();
+            this.updateCharts();
+            icon.style.animation = '';
+            this.hideLoadingState();
+            
+            // Show success feedback
+            syncBtn.style.background = 'var(--accent-lime)';
+            setTimeout(() => {
+                syncBtn.style.background = '';
+            }, 1000);
+        }, 2000);
     }
 }
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
-    new GameTimeCentral();
+    window.gameTimeApp = new GameTimeCentral();
 });
+
+// Add spin animation for sync button
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(style);
 
 // Real-time updates simulation
 setInterval(() => {
-    // Simulate real-time data updates
     const app = window.gameTimeApp;
     if (app && app.currentSection === 'dashboard') {
-        // Update random stats occasionally
         if (Math.random() < 0.1) {
             app.renderRecentActivity();
         }
     }
-}, 30000); // Update every 30 seconds
+}, 30000);
+
+// Store app instance globally
+window.gameTimeApp = null;

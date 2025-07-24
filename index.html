@@ -57,33 +57,53 @@
                 </div>
 
                 <div class="dashboard-grid">
+                    <!-- Primary Metric -->
+                    <div class="primary-metric">
+                        <div class="total-hours-card">
+                            <div class="metric-icon">
+                                <svg class="progress-ring" viewBox="0 0 60 60">
+                                    <circle class="progress-ring-circle" cx="30" cy="30" r="30" id="totalProgressRing"></circle>
+                                </svg>
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div class="metric-info">
+                                <h2 id="totalHours" data-target="0">0h</h2>
+                                <p>Total Gaming Hours</p>
+                                <div class="streak-counter">
+                                    <i class="fas fa-fire"></i>
+                                    <span id="streak">7</span> day streak
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Stats Cards -->
                     <div class="stats-row">
-                        <div class="stat-card">
+                        <div class="stat-card" data-platform="steam">
                             <div class="stat-icon steam"><i class="fab fa-steam"></i></div>
                             <div class="stat-info">
-                                <h3 id="steamHours">0h</h3>
+                                <h3 id="steamHours" data-target="0">0h</h3>
                                 <p>Steam Hours</p>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" data-platform="playstation">
                             <div class="stat-icon playstation"><i class="fab fa-playstation"></i></div>
                             <div class="stat-info">
-                                <h3 id="playstationHours">0h</h3>
+                                <h3 id="playstationHours" data-target="0">0h</h3>
                                 <p>PlayStation Hours</p>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" data-platform="xbox">
                             <div class="stat-icon xbox"><i class="fab fa-xbox"></i></div>
                             <div class="stat-info">
-                                <h3 id="xboxHours">0h</h3>
+                                <h3 id="xboxHours" data-target="0">0h</h3>
                                 <p>Xbox Hours</p>
                             </div>
                         </div>
-                        <div class="stat-card">
+                        <div class="stat-card" data-platform="nintendo">
                             <div class="stat-icon nintendo"><i class="fas fa-gamepad"></i></div>
                             <div class="stat-info">
-                                <h3 id="nintendoHours">0h</h3>
+                                <h3 id="nintendoHours" data-target="0">0h</h3>
                                 <p>Nintendo Hours</p>
                             </div>
                         </div>
@@ -174,6 +194,19 @@
                 </div>
             </section>
         </main>
+        
+        <!-- Floating Action Button -->
+        <button class="floating-action" id="syncBtn" title="Sync Data">
+            <i class="fas fa-sync-alt"></i>
+        </button>
+        
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <p>Syncing gaming data...</p>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>
