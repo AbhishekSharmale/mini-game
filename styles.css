@@ -109,10 +109,19 @@ body::after {
     filter: drop-shadow(var(--glow-cyan));
 }
 
-.logo h1 {
+.logo-text h1 {
     font-size: 1.8rem;
     color: var(--text-primary);
     font-weight: 600;
+    margin: 0;
+}
+
+.logo-text small {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-weight: 400;
+    display: block;
+    margin-top: -0.2rem;
 }
 
 .nav-menu {
