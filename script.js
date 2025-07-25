@@ -5,12 +5,15 @@ class GameTimeCentral {
         this.currentSection = 'dashboard';
         this.charts = {};
         this.mockData = this.generateMockData();
+        this.steamAPI = new SteamAPI();
+        this.realData = { steam: null };
         this.init();
     }
 
     init() {
         this.setupEventListeners();
         this.setupKeyboardNavigation();
+        this.loadStoredData();
         this.showLoadingState();
         setTimeout(() => {
             this.loadData();
@@ -20,6 +23,14 @@ class GameTimeCentral {
             this.renderSocial();
             this.hideLoadingState();
         }, 1000);
+    }
+    
+    loadStoredData() {
+        // Load stored Steam data
+        const storedSteamData = localStorage.getItem('steamData');
+        if (storedSteamData) {
+            this.realData.steam = JSON.parse(storedSteamData);
+        }
     }
 
     generateMockData() {
@@ -639,25 +650,189 @@ class GameTimeCentral {
         document.getElementById('connectModal').style.display = 'none';
     }
     
-    connectAccount(platform) {
-        const btn = document.getElementById(`connect${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
-        const status = document.getElementById(`${platform}Status`);
+    async connectAccount(platform) {
+        if (platform === 'steam') {
+            await this.connectSteamAccount();
+        } else {
+            // Fallback for other platforms
+            const btn = document.getElementById(`connect${platform.charAt(0).toUpperCase() + platform.slice(1)}`);
+            const status = document.getElementById(`${platform}Status`);
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Connected';
+                btn.classList.add('connected');
+                status.textContent = 'Connected';
+                status.classList.add('connected');
+                localStorage.setItem(`${platform}Connected`, 'true');
+                this.showAchievement(`${platform.charAt(0).toUpperCase() + platform.slice(1)} Connected!`, 'Account linked successfully');
+            }, 2000);
+        }
+    }
+    
+    async connectSteamAccount() {
+        const btn = document.getElementById('connectSteam');
+        const status = document.getElementById('steamStatus');
+        const input = document.getElementById('steamInput');
+        
+        if (btn.textContent.includes('Connect')) {
+            // Show input field
+            input.style.display = 'block';
+            btn.innerHTML = '<i class="fas fa-check"></i> Confirm';
+            return;
+        }
+        
+        const steamInput = input.value.trim();
+        if (!steamInput) {
+            alert('Please enter your Steam ID or profile URL');
+            return;
+        }
         
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Connecting...';
         btn.disabled = true;
         
-        setTimeout(() => {
-            btn.innerHTML = '<i class="fas fa-check"></i> Connected';
-            btn.classList.add('connected');
-            status.textContent = 'Connected';
-            status.classList.add('connected');
+        try {
+            // Extract Steam ID from URL or use directly
+            let steamId = steamInput;
+            if (steamInput.includes('steamcommunity.com')) {
+                const match = steamInput.match(/\/profiles\/(\d+)/) || steamInput.match(/\/id\/([^/]+)/);
+                if (match) {
+                    steamId = match[1];
+                    if (isNaN(steamId)) {
+                        // It's a vanity URL, resolve it
+                        steamId = await this.steamAPI.getSteamId(steamId);
+                    }
+                }
+            }
             
-            // Save connection status
-            localStorage.setItem(`${platform}Connected`, 'true');
+            if (!steamId) {
+                throw new Error('Invalid Steam ID or URL');
+            }
             
-            // Show success message
-            this.showAchievement(`${platform.charAt(0).toUpperCase() + platform.slice(1)} Connected!`, 'Account linked successfully');
-        }, 2000);
+            // Get Steam data
+            const steamData = await this.steamAPI.getUserStats(steamId);
+            
+            if (steamData.playerSummary) {
+                this.realData.steam = steamData;
+                localStorage.setItem('steamData', JSON.stringify(steamData));
+                localStorage.setItem('steamConnected', 'true');
+                
+                btn.innerHTML = '<i class="fas fa-check"></i> Connected';
+                btn.classList.add('connected');
+                status.textContent = `Connected as ${steamData.playerSummary.personaname}`;
+                status.classList.add('connected');
+                input.style.display = 'none';
+                
+                this.showAchievement('Steam Connected!', `Loaded ${steamData.totalGames} games, ${steamData.totalHours}h played`);
+                
+                // Update dashboard with real data
+                this.updateDashboardWithRealData();
+            } else {
+                throw new Error('Failed to fetch Steam data');
+            }
+        } catch (error) {
+            console.error('Steam connection error:', error);
+            btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+            status.textContent = 'Connection failed';
+            alert('Failed to connect to Steam. Please check your Steam ID and try again.');
+        } finally {
+            btn.disabled = false;
+        }
+    }
+    
+    updateDashboardWithRealData() {
+        if (this.realData.steam) {
+            const steamData = this.realData.steam;
+            
+            // Update Steam hours with real data
+            document.getElementById('steamHours').textContent = `${steamData.totalHours}h`;
+            
+            // Update total hours
+            const totalHours = steamData.totalHours + this.calculateOtherPlatformHours();
+            document.getElementById('totalHours').textContent = `${totalHours}h`;
+            
+            // Update progress ring
+            this.updateProgressRing(totalHours);
+            
+            // Update games library with real Steam games
+            this.updateGamesLibraryWithSteamData(steamData.ownedGames);
+            
+            // Update recent activity
+            this.updateRecentActivityWithSteamData(steamData.recentGames);
+        }
+    }
+    
+    calculateOtherPlatformHours() {
+        const platformHours = this.calculatePlatformHours();
+        return platformHours.playstation + platformHours.xbox + platformHours.nintendo + platformHours.epic;
+    }
+    
+    updateGamesLibraryWithSteamData(steamGames) {
+        const gamesGrid = document.getElementById('gamesGrid');
+        const steamGameCards = steamGames.map(game => `
+            <div class="game-card" data-platform="steam">
+                <div class="game-header">
+                    <div class="game-title">${game.name}</div>
+                    <div class="platform-badge steam">STEAM</div>
+                </div>
+                <div class="game-stats">
+                    <span>Playtime: ${this.steamAPI.formatPlaytime(game.playtime_forever)}</span>
+                    <span class="playtime">${this.steamAPI.formatPlaytime(game.playtime_forever)}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        // Mix real Steam data with mock data for other platforms
+        const otherGames = this.mockData.games.filter(game => game.platform !== 'steam');
+        const otherGameCards = otherGames.map(game => `
+            <div class="game-card" data-platform="${game.platform}">
+                <div class="game-header">
+                    <div class="game-title">${game.name}</div>
+                    <div class="platform-badge ${game.platform}">${game.platform.toUpperCase()}</div>
+                </div>
+                <div class="game-stats">
+                    <span>Genre: ${game.genre}</span>
+                    <span class="playtime">${game.hours}h</span>
+                </div>
+                <div class="game-stats">
+                    <span>Last Played: ${new Date(game.lastPlayed).toLocaleDateString()}</span>
+                </div>
+            </div>
+        `).join('');
+        
+        gamesGrid.innerHTML = steamGameCards + otherGameCards;
+    }
+    
+    updateRecentActivityWithSteamData(recentGames) {
+        const activityContainer = document.getElementById('recentActivity');
+        const steamActivity = recentGames.slice(0, 3).map(game => `
+            <div class="activity-item">
+                <div class="activity-icon steam">
+                    <i class="fab fa-steam"></i>
+                </div>
+                <div class="activity-info">
+                    <h4>${game.name}</h4>
+                    <p>${this.steamAPI.formatPlaytime(game.playtime_forever)} total • Recently played</p>
+                </div>
+            </div>
+        `).join('');
+        
+        // Mix with mock data
+        const otherActivity = this.mockData.games.filter(g => g.platform !== 'steam').slice(0, 2).map(game => `
+            <div class="activity-item">
+                <div class="activity-icon ${game.platform}">
+                    <i class="fas fa-gamepad"></i>
+                </div>
+                <div class="activity-info">
+                    <h4>${game.name}</h4>
+                    <p>${game.hours}h played • ${new Date(game.lastPlayed).toLocaleDateString()}</p>
+                </div>
+            </div>
+        `).join('');
+        
+        activityContainer.innerHTML = steamActivity + otherActivity;
     }
     
     updateConnectionStatus() {
