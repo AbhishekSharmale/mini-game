@@ -694,24 +694,22 @@ class GameTimeCentral {
         btn.disabled = true;
         
         try {
-            // For demo, accept your Steam ID or any input
+            // Extract Steam ID from URL or use directly
             let steamId = steamInput;
             if (steamInput.includes('steamcommunity.com')) {
                 const match = steamInput.match(/\/profiles\/(\d+)/) || steamInput.match(/\/id\/([^/]+)/);
                 if (match) {
                     steamId = match[1];
+                    if (isNaN(steamId)) {
+                        // It's a vanity URL, resolve it
+                        steamId = await this.steamAPI.getSteamId(steamId);
+                    }
                 }
             }
             
-            // Use your Steam ID for demo
-            if (steamId === '76561199137755823' || steamInput.includes('76561199137755823')) {
-                steamId = '76561199137755823';
-            } else {
-                steamId = '76561199137755823'; // Default to your ID for demo
+            if (!steamId) {
+                throw new Error('Invalid Steam ID or URL');
             }
-            
-            // Always use demo Steam ID
-            steamId = '76561199137755823';
             
             // Get Steam data
             const steamData = await this.steamAPI.getUserStats(steamId);
