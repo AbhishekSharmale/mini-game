@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: gametime-central-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: STEAM_API_KEY
+        sync: false

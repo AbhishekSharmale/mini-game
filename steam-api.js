@@ -1,7 +1,10 @@
 // Steam API Integration
 class SteamAPI {
     constructor() {
-        this.baseUrl = '/api/steam'; // Use local server
+        // Use Render backend URL (will be updated after deployment)
+        this.baseUrl = window.location.hostname === 'localhost' 
+            ? '/api/steam' 
+            : 'https://gametime-central-api.onrender.com/api/steam';
     }
 
     async getSteamId(vanityUrl) {
